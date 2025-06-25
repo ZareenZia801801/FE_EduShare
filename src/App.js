@@ -6,8 +6,8 @@ import Header from './Header';
 import Footer from './Footer';
 import './App.css';
 import FileDetails from './FileDetails';
+import UserProfile from './UserProfile';
 
-// LayoutWrapper to conditionally wrap the upload page
 function LayoutWrapper({ children }) {
   const location = useLocation();
   const isUploadPage = location.pathname === '/';
@@ -25,33 +25,45 @@ function App() {
       <div className="page-layout">
         <Header />
 
-       <Routes>
-  {/* Wrap only upload page with App class via LayoutWrapper */}
-  <Route
-    path="/"
-    element={
-      <LayoutWrapper>
-        <FormValidation />
-      </LayoutWrapper>
-    }
-  />
-  <Route
-    path="/files"
-    element={
-      <LayoutWrapper>
-        <UploadedFilesList />
-      </LayoutWrapper>
-    }
-  />
-  <Route
-    path="/file/:id"
-    element={
-      <LayoutWrapper>
-        <FileDetails />
-      </LayoutWrapper>
-    }
-  />
-</Routes>
+        <Routes>
+
+          <Route
+            path="/"
+            element={
+              <LayoutWrapper>
+                <FormValidation />
+              </LayoutWrapper>
+            }
+          />
+
+          <Route
+            path="/files"
+            element={
+              <LayoutWrapper>
+                <UploadedFilesList />
+              </LayoutWrapper>
+            }
+          />
+
+          <Route
+            path="/file/:id"
+            element={
+              <LayoutWrapper>
+                <FileDetails />
+              </LayoutWrapper>
+            }
+          />
+
+          <Route
+            path="/profile"
+            element={
+              <LayoutWrapper>
+                <UserProfile />
+              </LayoutWrapper>
+            }
+          />
+
+        </Routes>
 
         <Footer />
       </div>
