@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import FormValidation from './FormValidation';
 import UploadedFilesList from './UploadedFilesList';
@@ -7,6 +6,10 @@ import Footer from './Footer';
 import './App.css';
 import FileDetails from './FileDetails';
 import UserProfile from './UserProfile';
+import Login from './login';
+import Signup from './Signup';
+
+
 
 function LayoutWrapper({ children }) {
   const location = useLocation();
@@ -19,6 +22,7 @@ function LayoutWrapper({ children }) {
   );
 }
 
+
 function App() {
   return (
     <Router>
@@ -26,7 +30,6 @@ function App() {
         <Header />
 
         <Routes>
-
           <Route
             path="/"
             element={
@@ -63,8 +66,24 @@ function App() {
             }
           />
 
-        </Routes>
+          <Route
+            path="/login"
+            element={
+              <LayoutWrapper>
+                <Login />
+              </LayoutWrapper>
+            }
+          />
 
+          <Route
+            path="/signup"
+            element={
+              <LayoutWrapper>
+                <Signup />
+              </LayoutWrapper>
+            }
+          />
+        </Routes>
         <Footer />
       </div>
     </Router>

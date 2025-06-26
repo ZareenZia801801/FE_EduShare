@@ -1,0 +1,61 @@
+.auth-container {
+  max-width: 400px;
+  margin: 60px auto;
+  padding: 100px;
+  background: #ffffff;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.auth-container h2 {
+  margin-bottom: 20px;
+  color: #ff7f00;
+}
+
+.auth-container input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.auth-container button {
+  width: 100%;
+  padding: 10px;
+  background: #ff7f00;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.auth-container button:hover {
+  background: #e66e00;
+}
+.login-logo {
+  width: 100px;
+  margin: 0 auto;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.forgot-password {
+  text-align: center;
+  margin-top: 10px;
+  color: #333;
+  font-size: 14px;
+}
+
+.reset-link {
+  font-weight: bold;
+  color: #ff6600;
+  cursor: pointer;
+}
+.logo-img {
+  width: 150px;
+  height: auto;
+  margin-bottom: 1rem;
+}
