@@ -9,43 +9,47 @@ function FormValidation() {
 
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-
-  // // Fetch file count from server
-  // useEffect(() => {
-  //   const fetchFileCount = async () => {
-  //     try {
-  //       const response = await fetch(`${API_BASE_URL}/files/count`);
-  //       const data = await response.json();
-  //       setFileCount(data.count);
-  //     } catch (err) {
-  //       console.error('Error fetching file count:', err);
-  //     }
-  //   };
-  //   fetchFileCount();
-  // }, [API_BASE_URL]);
-
-  // Fetch user count from server
   useEffect(() => {
     const fetchCounts = async () => {
+
       try {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+          console.warn("No token found, skipping fetch.");
+          return;
+        }
+
+        const headers = {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        };
+
         const [fileRes, userRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/files/fileCount`),
-          fetch(`${API_BASE_URL}/api/auth/userCount`)
+          fetch(`${API_BASE_URL}/files/fileCount`, { headers }),
+          fetch(`${API_BASE_URL}/api/user/userCount`, { headers })
         ]);
-  
+
+        console.log("Using token:", token);
+        console.log("fileCount status:", fileRes.status);
+        console.log("userCount status:", userRes.status);
+
+        if (!fileRes.ok) throw new Error(`File count request failed: ${fileRes.status}`);
+        if (!userRes.ok) throw new Error(`User count request failed: ${userRes.status}`);
+
         const fileData = await fileRes.json();
         const userData = await userRes.json();
-        console.log("userData:", userData);
-  
+
         setFileCount(fileData.count);
-        setUserCount(userData.count); 
+        setUserCount(userData.count);
       } catch (err) {
         console.error('Error fetching counts:', err);
       }
     };
+
     fetchCounts();
   }, [API_BASE_URL]);
-  
+
+
   const onSubmit = async (data) => {
     try {
       const formData = new FormData();
@@ -58,10 +62,19 @@ function FormValidation() {
       formData.append('semester', data.semester);
       formData.append('tags', data.tags);
 
+      const token = localStorage.getItem('authToken');
       const response = await fetch(`${API_BASE_URL}/files/upload`, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: formData,
       });
+
+      // const response = await fetch(`${API_BASE_URL}/files/upload`, {
+      //   method: 'POST',
+      //   body: formData,
+      // });
 
       if (response.ok) {
         alert('File uploaded successfully!');
@@ -105,7 +118,6 @@ function FormValidation() {
       <div className="right-panel">
         <div className="form-container">
           <h2>📁 Upload Study Material</h2>
-
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="form-row">
               <div className="form-group">
@@ -157,13 +169,10 @@ function FormValidation() {
                 {errors.file && <p className="error">{errors.file.message}</p>}
               </div>
             </div>
-
             <button type="submit">Upload</button>
           </form>
-
         </div>
       </div>
-
     </div>
   );
 

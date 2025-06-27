@@ -12,22 +12,56 @@ function UploadedFilesList() {
     const [sortOrder, setSortOrder] = useState('asc');
     const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
+
     useEffect(() => {
         setLoading(true);
         const queryParam = searchQuery ? `&searchTerm=${encodeURIComponent(searchQuery)}` : '';
-        fetch(`${API_BASE_URL}/files/list?page=${page}&size=${pageSize}${queryParam}`)
-            .then(response => response.json())
-            .then(data => {
+
+        const fetchFiles = async () => {
+            try {
+                const token = localStorage.getItem('authToken'); // ✅ Get token
+                const headers = {
+                    'Authorization': `Bearer ${token}`, // ✅ Set header
+                    'Accept': '*/*'
+                };
+                const response = await fetch(
+                    `${API_BASE_URL}/files/list?page=${page}&size=${pageSize}${queryParam}`,
+                    { headers } // ✅ Pass headers
+                );
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch files: ${response.status}`);
+                }
+
+                const data = await response.json();
                 console.log('Backend returned:', data);
                 setFiles(data.content || []);
                 setTotalPages(data.totalPages || 1);
-                setLoading(false);
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Error fetching files:', error);
+            } finally {
                 setLoading(false);
-            });
-    }, [page, pageSize, searchQuery]);
+            }
+        };
+        fetchFiles();
+    }, [page, pageSize, searchQuery, API_BASE_URL]);
+
+
+
+
+    //     fetch(`${API_BASE_URL}/files/list?page=${page}&size=${pageSize}${queryParam}`)
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             console.log('Backend returned:', data);
+    //             setFiles(data.content || []);
+    //             setTotalPages(data.totalPages || 1);
+    //             setLoading(false);
+    //         })
+    //         .catch(error => {
+    //             console.error('Error fetching files:', error);
+    //             setLoading(false);
+    //         });
+    // }, [page, pageSize, searchQuery]);
 
     //sorting logic
     const sortedFiles = [...files].sort((a, b) => {
@@ -51,9 +85,18 @@ function UploadedFilesList() {
     // For Download functionality
     const handleDownload = async (fileName) => {
         try {
+            // const response = await fetch(`${API_BASE_URL}/files/download?fileName=${fileName}`, {
+            //     method: 'GET',
+            // });
+
+            const token = localStorage.getItem('authToken');
             const response = await fetch(`${API_BASE_URL}/files/download?fileName=${fileName}`, {
                 method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             });
+
 
             if (!response.ok) throw new Error('Download failed');
 
@@ -164,9 +207,9 @@ function UploadedFilesList() {
                                     <tr key={file.id}>
                                         <td>
                                             <Link to={`/file/${file.id}`} style={{ textDecoration: 'none', color: '#007bff' }}>
-                                             {file.title}
-                                             </Link>
-                                         </td>
+                                                {file.title}
+                                            </Link>
+                                        </td>
                                         <td>{file.fileName}</td>
                                         <td>{file.courseCode} - {file.courseName}</td>
                                         <td>{file.instructor}</td>

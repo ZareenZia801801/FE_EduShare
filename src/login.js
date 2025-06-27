@@ -1,19 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect  } from 'react';
 import './Auth.css';
+import { useAuth } from './AuthContext';
+import { useNavigate } from 'react-router-dom';
+
 
 const Login = () => {
   const [studentId, setStudentId] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { authToken , login} = useAuth();
+  const navigate = useNavigate();
+
+
+  useEffect(() => {
+    if (authToken) navigate('/');
+  }, [authToken, navigate]);
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
+
     try {
-      const response = await fetch('https://your-backend-url.com/api/login', {
+      const response = await fetch('http://localhost:8081/api/v1/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ studentId, password })
@@ -24,11 +36,11 @@ const Login = () => {
       }
 
       const data = await response.json();
-      // Assume backend returns { token: '...', student: { ... } }
+      login(data.token); 
+      navigate('/');
 
-      // Store token for future requests
-      localStorage.setItem('authToken', data.token);
-      alert('Login Successful!');
+      //  localStorage.setItem('authToken', data.token);
+      //alert('Login Successful!');
       // Redirect or update app state here, e.g.:
       // navigate('/dashboard');
     } catch (err) {

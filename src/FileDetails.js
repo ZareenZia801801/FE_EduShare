@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 function FileDetails() {
   const { id } = useParams();
@@ -11,8 +12,15 @@ function FileDetails() {
   useEffect(() => {
     const fetchFileDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/files/fileDetails/${id}`);
+         const token = localStorage.getItem('authToken'); // 🔧
+        const headers = {
+          'Authorization': `Bearer ${token}`, // 🔧
+          'Accept': '*/*'
+        };
+        const response = await fetch(`${API_BASE_URL}/files/fileDetails/${id}`, { headers }); // 🔧
+        if (!response.ok) throw new Error("Failed to fetch file details");
         const data = await response.json();
+
         setFile(data.fileMetadata);
         setComments(data.comments);
       } catch (error) {
@@ -20,7 +28,6 @@ function FileDetails() {
       } finally {
         setLoading(false);
 
-        // ✅ Force layout repaint after data load
         setTimeout(() => {
           window.dispatchEvent(new Event("resize"));
         }, 100);
@@ -36,17 +43,27 @@ function FileDetails() {
 
     const formData = new URLSearchParams();
     formData.append("fileId", id);
-    formData.append("username", "Anonymous"); // or dynamic user
+    formData.append("username", "Anonymous"); 
     formData.append("text", newComment);
 
     try {
-      const response = await fetch("http://localhost:8080/comments/add", {
+      const token = localStorage.getItem('authToken'); // 🔧
+      const headers = {
+        'Authorization': `Bearer ${token}`, // 🔧
+        'Content-Type': 'application/x-www-form-urlencoded'
+      };
+       const response = await fetch(`${API_BASE_URL}/comments/add`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
+        headers, // 🔧
         body: formData.toString(),
       });
+      // const response = await fetch("${API_BASE_URL}/comments/add", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/x-www-form-urlencoded",
+      //   },
+      //   body: formData.toString(),
+      // });
 
       if (!response.ok) throw new Error("Failed to post comment");
 
@@ -62,9 +79,18 @@ function FileDetails() {
 
   const handleDownload = async (fileName) => {
     try {
-      const response = await fetch(`http://localhost:8080/files/download?fileName=${fileName}`, {
+       const token = localStorage.getItem('authToken'); // 🔧
+      const headers = {
+        'Authorization': `Bearer ${token}` // 🔧
+      };
+
+      const response = await fetch(`${API_BASE_URL}/files/download?fileName=${fileName}`, {
         method: 'GET',
+        headers // 🔧
       });
+      // const response = await fetch(`${API_BASE_URL}/files/download?fileName=${fileName}`, {
+      //   method: 'GET',
+      // });
 
       if (!response.ok) throw new Error('Download failed');
 
@@ -88,8 +114,18 @@ function FileDetails() {
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`http://localhost:8080/comments/delete/${commentId}`, {
+      // const response = await fetch(`${API_BASE_URL}/comments/delete/${commentId}`, {
+      //   method: "DELETE",
+      // });
+
+       const token = localStorage.getItem('authToken'); // 🔧
+      const headers = {
+        'Authorization': `Bearer ${token}` // 🔧
+      };
+
+      const response = await fetch(`${API_BASE_URL}/comments/${commentId}`, {
         method: "DELETE",
+        headers // 🔧
       });
 
       if (!response.ok) throw new Error("Failed to delete");

@@ -12,7 +12,18 @@ const UserProfile = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/auth/profile/${testStudentId}`);
+        const token = localStorage.getItem("authToken"); 
+        if (!token) {
+          console.warn("No token found, skipping profile fetch.");
+          return;
+        }
+
+        const response = await fetch(`${API_BASE_URL}/api/auth/profile/${testStudentId}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`  // ✅ Send token in header
+          }
+        });
         if (!response.ok) throw new Error("Profile not found");
         const data = await response.json();
         setUser(data);

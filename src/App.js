@@ -8,7 +8,8 @@ import FileDetails from './FileDetails';
 import UserProfile from './UserProfile';
 import Login from './login';
 import Signup from './Signup';
-
+import { AuthProvider } from './AuthContext';
+import ProtectedRoute from './ProtectedRoute';
 
 
 function LayoutWrapper({ children }) {
@@ -22,73 +23,82 @@ function LayoutWrapper({ children }) {
   );
 }
 
-
 function App() {
   return (
     <Router>
-      <div className="page-layout">
-        <Header />
+      <AuthProvider>
+        <div className="page-layout">
+          <Header />
+          <Routes>
+            {/* Protected Routes */}
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <LayoutWrapper>
+                    <FormValidation />
+                  </LayoutWrapper>
+                </ProtectedRoute>
+              }
+            />
 
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <LayoutWrapper>
-                <FormValidation />
-              </LayoutWrapper>
-            }
-          />
+            <Route
+              path="/files"
+              element={
+                <ProtectedRoute>
+                  <LayoutWrapper>
+                    <UploadedFilesList />
+                  </LayoutWrapper>
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/files"
-            element={
-              <LayoutWrapper>
-                <UploadedFilesList />
-              </LayoutWrapper>
-            }
-          />
+            <Route
+              path="/file/:id"
+              element={
+                <ProtectedRoute>
+                  <LayoutWrapper>
+                    <FileDetails />
+                  </LayoutWrapper>
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/file/:id"
-            element={
-              <LayoutWrapper>
-                <FileDetails />
-              </LayoutWrapper>
-            }
-          />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <LayoutWrapper>
+                    <UserProfile />
+                  </LayoutWrapper>
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/profile"
-            element={
-              <LayoutWrapper>
-                <UserProfile />
-              </LayoutWrapper>
-            }
-          />
+            {/* Public Routes */}
+            <Route
+              path="/login"
+              element={
+                <LayoutWrapper>
+                  <Login />
+                </LayoutWrapper>
+              }
+            />
 
-          <Route
-            path="/login"
-            element={
-              <LayoutWrapper>
-                <Login />
-              </LayoutWrapper>
-            }
-          />
-
-          <Route
-            path="/signup"
-            element={
-              <LayoutWrapper>
-                <Signup />
-              </LayoutWrapper>
-            }
-          />
-        </Routes>
-        <Footer />
-      </div>
+            <Route
+              path="/signup"
+              element={
+                <LayoutWrapper>
+                  <Signup />
+                </LayoutWrapper>
+              }
+            />
+          </Routes>
+          <Footer />
+        </div>
+      </AuthProvider>
     </Router>
   );
 }
-
 
 export default App;
